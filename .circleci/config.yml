@@ -94,6 +94,9 @@ jobs:
          command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
      - run:
          working_directory: backend/gameMusic
+         name: deploy to prod
+         command: |
+          aws deploy create-deployment \
           --application-name apple \
           --deployment-group-name apple \
           --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
