@@ -67,28 +67,27 @@ jobs:
 
     steps:
      - checkout
-     - run: echo "Hello World"
-    #  - run: sudo composer self-update --1
-    #  - restore_cache:
-    #      key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-    #  - run:
-    #      working_directory: backend/gameMusic
-    #      command: composer install -n --no-dev --prefer-dist
-    #  - save_cache:
-    #      key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-    #      paths:
-    #         - backend/gameMusic/vendor
-    #  - run:
-    #     working_directory: backend/gameMusic
-    #     command: npm ci
-    #  - run:
-    #      working_directory: backend/gameMusic
-    #      command: npm run prod
-    #  - run:
-    #      working_directory: backend/gameMusic
-    #      name: archive artifacts
-    #      command: zip -ryq laravel.zip .
-    #  - aws-cli/install
+     - run: sudo composer self-update --1
+     - restore_cache:
+         key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+     - run:
+         working_directory: backend/gameMusic
+         command: composer install -n --no-dev --prefer-dist
+     - save_cache:
+         key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+         paths:
+            - backend/gameMusic/vendor
+     - run:
+        working_directory: backend/gameMusic
+        command: npm ci
+     - run:
+         working_directory: backend/gameMusic
+         command: npm run prod
+     - run:
+         working_directory: backend/gameMusic
+         name: archive artifacts
+         command: zip -ryq laravel.zip .
+     - aws-cli/install
     #  - run:
     #      working_directory: backend/gameMusic
     #      name: upload artifacts to s3
