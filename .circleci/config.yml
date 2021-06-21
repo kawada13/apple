@@ -60,39 +60,39 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/php:7.4-node-browsers
+     - image: circleci/php:7.4-node-browsers
 
     environment:
      AWS_DEFAULT_REGION: ap-northeast-1
 
     steps:
-      - checkout
-      - run: sudo composer self-update --1
-      - restore_cache:
+     - checkout
+     - run: sudo composer self-update --1
+     - restore_cache:
          key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-      - run:
+     - run:
          working_directory: backend/gameMusic
          command: composer install -n --no-dev --prefer-dist
-      - save_cache:
+     - save_cache:
          key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
          paths:
             - backend/gameMusic/vendor
-      - run:
+     - run:
         working_directory: backend/gameMusic
         command: npm ci
-      - run:
+     - run:
          working_directory: backend/gameMusic
          command: npm run prod
-      - run:
+     - run:
          working_directory: backend/gameMusic
          name: archive artifacts
          command: zip -ryq laravel.zip .
-      - aws-cli/install
-      - run:
+     - aws-cli/install
+     - run:
          working_directory: backend/gameMusic
          name: upload artifacts to s3
          command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
-      - run:
+     - run:
          working_directory: backend/gameMusic
           --application-name apple \
           --deployment-group-name apple \
