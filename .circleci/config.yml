@@ -58,45 +58,45 @@ jobs:
           command: ./vendor/bin/phpunit
 
 
-  deploy:
-    docker:
-      - image: circleci/php:7.4-node-browsers
+  # deploy:
+  #   docker:
+  #     - image: circleci/php:7.4-node-browsers
 
-    environment:
-     AWS_DEFAULT_REGION: ap-northeast-1
+  #   environment:
+  #    AWS_DEFAULT_REGION: ap-northeast-1
 
-    steps:
-     - checkout
-     - run: sudo composer self-update --1
-     - restore_cache:
-        key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-     - run:
-        working_directory: backend/gameMusic
-        command: composer install -n --no-dev --prefer-dist
-     - save_cache:
-         key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-         paths:
-            - backend/gameMusic/vendor
-     - run:
-        working_directory: backend/gameMusic
-        command: npm ci
-     - run:
-        working_directory: backend/gameMusic
-        command: npm run prod
-     - run:
-        working_directory: backend/gameMusic
-        name: archive artifacts
-        command: zip -ryq laravel.zip .
-     - aws-cli/install
-     - run:
-        working_directory: backend/gameMusic
-        name: upload artifacts to s3
-        command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
-     - run:
-        working_directory: backend/gameMusic
-         --application-name apple \
-         --deployment-group-name apple \
-         --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
+  #   steps:
+  #    - checkout
+  #    - run: sudo composer self-update --1
+  #    - restore_cache:
+  #       key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #       command: composer install -n --no-dev --prefer-dist
+  #    - save_cache:
+  #        key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+  #        paths:
+  #           - backend/gameMusic/vendor
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #       command: npm ci
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #       command: npm run prod
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #       name: archive artifacts
+  #       command: zip -ryq laravel.zip .
+  #    - aws-cli/install
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #       name: upload artifacts to s3
+  #       command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
+  #    - run:
+  #       working_directory: backend/gameMusic
+  #        --application-name apple \
+  #        --deployment-group-name apple \
+  #        --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
