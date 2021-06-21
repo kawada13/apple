@@ -92,11 +92,11 @@ jobs:
          working_directory: backend/gameMusic
          name: upload artifacts to s3
          command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
-    #  - run:
-    #      working_directory: backend/gameMusic
-    #       --application-name apple \
-    #       --deployment-group-name apple \
-    #       --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
+     - run:
+         working_directory: backend/gameMusic
+          --application-name apple \
+          --deployment-group-name apple \
+          --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
