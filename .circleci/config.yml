@@ -88,10 +88,10 @@ jobs:
          name: archive artifacts
          command: zip -ryq laravel.zip .
      - aws-cli/install
-    #  - run:
-    #      working_directory: backend/gameMusic
-    #      name: upload artifacts to s3
-    #      command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
+     - run:
+         working_directory: backend/gameMusic
+         name: upload artifacts to s3
+         command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
     #  - run:
     #      working_directory: backend/gameMusic
     #       --application-name apple \
