@@ -68,11 +68,7 @@ jobs:
        name: deploy
        command: |
         ssh -o StrictHostKeyChecking=no -t ubuntu@${HOST_NAME} "cd apple && \
-         git pull origin main && \
-         cd backend/gameMusic/ && \
-         composer install && \
-         php artisan migrate && \
-         php artisan config:cache"
+         git pull origin main"
 
 
 
