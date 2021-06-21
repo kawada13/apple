@@ -9,68 +9,100 @@ jobs:
           - DB_CONNECTION: mysql
           - DB_DATABASE: test_game
           - DB_USERNAME: root
-
       - image: circleci/mysql:5.7-ram
         environment:
           - MYSQL_ALLOW_EMPTY_PASSWORD: true
           - MYSQL_DATABASE: test_game
     steps:
-     - checkout
+      - checkout
+      - run: sudo apt update
+      - run: sudo apt-get install libfreetype6-dev
+      - run: sudo apt-get install libjpeg62-turbo-dev
+      - run: sudo apt-get install libpng-dev
+      - run: sudo apt-get install libwebp-dev
+      - run: sudo apt-get install libxpm-dev
 
-     - run: sudo apt update
-     - run: sudo apt-get install libfreetype6-dev
-     - run: sudo apt-get install libjpeg62-turbo-dev
-     - run: sudo apt-get install libpng-dev
-     - run: sudo apt-get install libwebp-dev
-     - run: sudo apt-get install libxpm-dev
-
-     - run: sudo docker-php-ext-install pdo_mysql
-     - run: sudo docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
-     - run: sudo docker-php-ext-install -j$(nproc) gd
+      - run: sudo docker-php-ext-install pdo_mysql
+      - run: sudo docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+      - run: sudo docker-php-ext-install -j$(nproc) gd
 
 
-     - restore_cache:
+      - restore_cache:
           key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: composer install -n --prefer-dist
-     - save_cache:
+      - save_cache:
           key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
           paths:
             - backend/gameMusic/vendor
 
 
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: echo "APP_KEY=" > .env.testing
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: php artisan key:generate
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: php artisan migrate
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: npm ci
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: npm run dev
-     - run:
+      - run:
           working_directory: backend/gameMusic
           command: ./vendor/bin/phpunit
 
+
   deploy:
-   docker:
-    - image: circleci/php:7.4-node-browsers
-   steps:
-    - add_ssh_keys
-    - run:
-       name: deploy
-       command: |
-        ssh -o StrictHostKeyChecking=no -t ubuntu@${HOST_NAME} "cd apple && \
-         git pull origin main"
+    docker:
+     - image: circleci/php:7.4-node-browsers
 
+    environment:
+     AWS_DEFAULT_REGION: ap-northeast-1
 
+    steps:
+     - checkout
+     - run: sudo composer self-update --1
+     - restore_cache:
+         key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+     - run:
+         working_directory: backend/gameMusic
+         command: composer install -n --no-dev --prefer-dist
+     - save_cache:
+         key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
+         paths:
+            - backend/gameMusic/vendor
+     - run:
+        working_directory: backend/gameMusic
+        command: npm ci
+     - run:
+         working_directory: backend/gameMusic
+         command: npm run prod
+     - run:
+         working_directory: backend/gameMusic
+         name: archive artifacts
+         command: zip -ryq laravel.zip .
+     - aws-cli/install
+     - run:
+         working_directory: backend/gameMusic
+         name: upload artifacts to s3
+         command: aws s3 cp laravel.zip s3://${AWS_S3_BUCKET_NAME}
+     - run:
+         working_directory: backend/gameMusic
+         name: deploy to prod
+         command: |
+          aws deploy create-deployment \
+          --application-name apple \
+          --deployment-group-name apple \
+          --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
+
+orbs:
+  aws-cli: circleci/aws-cli@1.0.0
 
 workflows:
   version: 2
