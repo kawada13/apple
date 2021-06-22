@@ -64,7 +64,7 @@ jobs:
     environment:
      AWS_DEFAULT_REGION: ap-northeast-1
 
-     
+
     steps:
      - checkout
      - run: sudo composer self-update --1
@@ -97,8 +97,8 @@ jobs:
          name: deploy to prod
          command: |
           aws deploy create-deployment \
-          --application-name apple \
-          --deployment-group-name apple \
+          --application-name apple-ci \
+          --deployment-group-name apple-ci \
           --s3-location bucket=${AWS_S3_BUCKET_NAME},key=laravel.zip,bundleType=zip
 
 orbs:
