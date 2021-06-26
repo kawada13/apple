@@ -2,6 +2,10 @@
 
 set -eux
 
-cd ~/apple/backend/gameMusic
-php artisan migrate --force
-php artisan config:cache
+cd ~/apple/development
+sudo docker-compose up -d
+sudo docker-compose exec app composer install
+sudo docker-compose exec app npm install
+sudo docker-compose exec app npm run production
+sudo docker-compose exec app php artisan config:cache
+
