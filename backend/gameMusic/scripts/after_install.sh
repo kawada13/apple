@@ -2,7 +2,6 @@
 
 set -eux
 
-
 cd ~/apple/development
 sudo docker-compose up -d
 sudo docker-compose exec -T app php artisan migrate
