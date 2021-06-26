@@ -26,7 +26,6 @@ jobs:
       - run: sudo docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
       - run: sudo docker-php-ext-install -j$(nproc) gd
 
-
       - restore_cache:
           key: composer-v1-{{ checksum "backend/gameMusic/composer.lock" }}
       - run:
@@ -65,7 +64,7 @@ jobs:
      AWS_DEFAULT_REGION: ap-northeast-1
 
 
-     
+
     steps:
      - checkout
      - run: sudo composer self-update --1
