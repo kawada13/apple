@@ -3,7 +3,8 @@
 set -eux
 
 cd ~/apple/development
-sudo docker-compose up -d
-sudo docker-compose exec -T app php artisan migrate
-sudo docker-compose exec -T app php artisan config:cache
+docker-compose up -d
+docker-compose exec -T app composer install
+docker-compose exec -T app php artisan migrate
+docker-compose exec -T app php artisan config:cache
 
